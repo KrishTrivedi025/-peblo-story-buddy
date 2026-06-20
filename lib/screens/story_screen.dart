@@ -51,10 +51,13 @@ class _StoryScreenState extends State<StoryScreen> {
     final audio = context.watch<AudioProvider>();
     final quiz = context.watch<QuizProvider>();
 
-    // Audio just finished → reveal the quiz.
+    // Audio just finished → reveal the quiz, but only if it isn't already
+    // showing (so replaying the story mid-quiz doesn't reset back to Q1).
     if (audio.state == AudioState.done && _lastAudio != AudioState.done) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<QuizProvider>().reveal();
+        if (!context.read<QuizProvider>().isVisible) {
+          context.read<QuizProvider>().reveal();
+        }
       });
     }
     _lastAudio = audio.state;
